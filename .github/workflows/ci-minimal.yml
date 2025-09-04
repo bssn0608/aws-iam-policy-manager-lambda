@@ -6,6 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_REGION: us-east-2
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
