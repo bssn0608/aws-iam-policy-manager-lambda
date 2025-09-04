@@ -1,13 +1,10 @@
 pipeline {
   agent any
-  options { timestamps(); ansiColor('xterm'); skipDefaultCheckout(true) }
-
+  options { timestamps(); skipDefaultCheckout(true) }   // <- removed ansiColor
   environment {
-    // Let Jenkins find Homebrew-installed tools on macOS
     PATH       = "/opt/homebrew/bin:/usr/local/bin:${env.PATH}"
-    AWS_REGION = "us-east-2"   // adjust if needed
+    AWS_REGION = "us-east-2"
   }
-
   stages {
     stage('Checkout') {
       steps {
@@ -16,7 +13,6 @@ pipeline {
         sh 'echo PATH=$PATH'
       }
     }
-
     stage('Package Lambda (zip)') {
       steps {
         sh '''
@@ -30,12 +26,10 @@ pipeline {
       }
       post { success { archiveArtifacts artifacts: 'files/lambda.zip', fingerprint: true } }
     }
-
     stage('Terraform fmt/validate') {
       steps {
         sh '''
           set -euo pipefail
-          # Find all dirs that contain *.tf and run init(fmt)/validate safely
           TF_DIRS=$(git ls-files "*.tf" | xargs -n1 dirname | sort -u || true)
           if [ -z "$TF_DIRS" ]; then
             echo "No Terraform files found."
@@ -50,12 +44,8 @@ pipeline {
         '''
       }
     }
-
     stage('Terraform plan (optional)') {
-      when {
-        // Only run if AWS creds are present in the environment later
-        expression { return env.AWS_ACCESS_KEY_ID?.trim() && env.AWS_SECRET_ACCESS_KEY?.trim() }
-      }
+      when { expression { return env.AWS_ACCESS_KEY_ID?.trim() && env.AWS_SECRET_ACCESS_KEY?.trim() } }
       steps {
         sh '''
           set -euo pipefail
