@@ -5,6 +5,18 @@ pipeline {
     PATH       = "/opt/homebrew/bin:/usr/local/bin:${env.PATH}"
     AWS_REGION = "us-east-2"
   }
+  stage('Debug shell') {
+  steps {
+    sh '''
+      echo "Shell: $0"
+      which bash || true
+      which sh || true
+      ls -ld "$PWD"
+      ls -ld "$PWD@tmp" || true
+      uname -a
+    '''
+  }
+}
   stages {
     stage('Checkout') {
       steps {
