@@ -21,7 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
       - name: Run Python tests (pytest)
-        run: pytest -q --cov=lambda --cov-report=xml
+        run: pytest -q --cov=lambda_func --cov-report=xml
       - name: Run unit tests (unittest)
         run: python -m unittest -v
       - name: Install Terraform & Helm
