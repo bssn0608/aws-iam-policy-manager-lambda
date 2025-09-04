@@ -1,0 +1,33 @@
+pipeline {
+  agent any
+  options { timestamps(); ansiColor('xterm') }
+  environment { AWS_REGION = 'us-east-2' }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Package Lambda') {
+      steps { sh 'bash jenkins/scripts/zip_lambda.sh' }
+      post { success { archiveArtifacts artifacts: 'files/lambda.zip', fingerprint: true } }
+    }
+    stage('Terraform Plan (dev)') {
+      steps {
+        dir('terraform/envs/dev') {
+          sh '''
+            terraform init -input=false
+            terraform validate
+            terraform plan -out=tfplan
+          '''
+        }
+      }
+      post { success { archiveArtifacts artifacts: 'terraform/envs/dev/tfplan', fingerprint: true } }
+    }
+    stage('Apply to dev (approval)') {
+      steps {
+        input message: 'Apply to dev?', ok: 'Apply'
+        dir('terraform/envs/dev') { sh 'terraform apply -auto-approve tfplan' }
+      }
+    }
+    stage('Smoke test') {
+      steps { sh 'bash jenkins/scripts/smoke_test.sh' }
+    }
+  }
+}

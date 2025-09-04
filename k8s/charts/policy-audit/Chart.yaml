@@ -1,0 +1,4 @@
+apiVersion: v2
+name: policy-audit
+version: 0.1.0
+description: Nightly dry-run audit against the private API

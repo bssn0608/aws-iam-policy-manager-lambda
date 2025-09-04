@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: policy-audit
+spec:
+  schedule: {{ .Values.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: auditor
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              command: ["/bin/sh","-c"]
+              args:
+                - |
+                  apk add --no-cache curl jq;
+                  curl -sS "{{ .Values.apiInvokeUrl }}/user-access?userid={{ .Values.userid }}&dry_run=true" | jq .

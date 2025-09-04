@@ -1,0 +1,6 @@
+boto3
+botocore
+pytest
+pytest-cov
+moto[s3,iam,dynamodb]>=5.0.0
+coverage

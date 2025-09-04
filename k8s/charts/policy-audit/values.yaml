@@ -1,0 +1,6 @@
+image:
+  repository: public.ecr.aws/docker/library/python
+  tag: "3.12-alpine"
+schedule: "0 3 * * *"
+apiInvokeUrl: ""
+userid: "test-user"
