@@ -1,4 +1,0 @@
-pytest
-boto3
-botocore
-moto[s3,iam,dynamodb]>=5.0.0
